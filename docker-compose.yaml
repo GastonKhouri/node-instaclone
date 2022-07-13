@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  instaclonedb:
+    image: mongo:5.0.0
+    container_name: instaclone-database
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo:/data/db
