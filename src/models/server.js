@@ -1,23 +1,36 @@
-const { ApolloServer } = require( 'apollo-server' );
+const express = require( 'express' );
+const { ApolloServer } = require( 'apollo-server-express' );
+const graphqlUploadExpress = require( 'graphql-upload/graphqlUploadExpress.js' );
 
 const { dbConnection } = require( '../database/config' );
-const { typeDefs, resolvers } = require( '../gql' );
+const { typeDefs, resolvers, context } = require( '../gql' );
 
 class Server {
 
 	constructor() {
 
-		// Set port
+		this.app = express();
 		this.port = process.env.PORT || '8080';
 
 		// Create Apollo Server
 		this.apolloServer = new ApolloServer( {
 			typeDefs,
 			resolvers,
+			context
 		} );
 
 		// Connect to DB
-		dbConnection();
+		this.connectDB();
+
+	}
+
+	middlewares() {
+
+		// Upload files
+		this.app.use( graphqlUploadExpress() );
+
+		// Add middlewares
+		this.apolloServer.applyMiddleware( { app: this.app } );
 
 	}
 
@@ -27,11 +40,24 @@ class Server {
 
 	}
 
+	async initialSetup() {
+
+		await this.apolloServer.start();
+
+	}
+
 	async listen() {
 
-		const { url } = await this.apolloServer.listen( { port: this.port } );
+		await this.apolloServer.start();
 
-		console.log( `Server ready at ${ url }` );
+		this.middlewares();
+
+		this.app.listen( this.port, () => {
+
+			console.log( `Server ready at http://localhost:${ this.port }${ this.apolloServer.graphqlPath }` );
+
+		} );
+
 
 	}
 

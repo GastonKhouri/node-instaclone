@@ -7,7 +7,7 @@ const fieldExistsUser = async ( field = '', value = '' ) => {
 	const fieldExists = await User.findOne( query );
 
 	if ( fieldExists ) {
-		throw new Error( `The ${ field } ${ value } is already registered` );
+		throw new Error( `The ${ field } ${ value } is already registered.` );
 	}
 
 };

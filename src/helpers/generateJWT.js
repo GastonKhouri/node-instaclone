@@ -1,6 +1,6 @@
 const jwt = require( 'jsonwebtoken' );
 
-const generateJWT = ( uid = '', expiresIn = '24h' ) => {
+const generateJWT = ( uid = '', expiresIn = '48h' ) => {
 
 	return new Promise( ( resolve, reject ) => {
 
